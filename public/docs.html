@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>СЭД | Система электронного документооборота</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Inter + Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #eef2f9;
+            color: #1e293b;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* LAYOUT */
+        .app {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* SIDEBAR (как на скриншотах) */
+        .sidebar {
+            width: 290px;
+            background: #ffffff;
+            border-right: 1px solid #e2edf2;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.02);
+            z-index: 10;
+            transition: transform 0.2s;
+        }
+
+        .logo-area {
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid #eef2f8;
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0b2b44, #1f5e8c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #5f7f9e;
+            margin-top: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-category {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6282a8;
+            margin: 12px 0 4px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: #1f405e;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            color: #6082a0;
+        }
+
+        .nav-item:hover {
+            background: #ecf3fa;
+            color: #0f4c6b;
+        }
+
+        .nav-item.active {
+            background: #e3f0fc;
+            color: #1d6f9c;
+            font-weight: 600;
+        }
+
+        .nav-item.active i {
+            color: #1d6f9c;
+        }
+
+        .submenu {
+            margin-left: 38px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .sub-item {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #2a577b;
+            transition: 0.1s;
+        }
+
+        .sub-item:hover {
+            background: #eef4fa;
+            color: #0a4b72;
+        }
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f6f9fe;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 12px 28px;
+            border-bottom: 1px solid #e2edf5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0b3550;
+        }
+
+        .btn-create {
+            background: #2179b8;
+            color: white;
+            border: none;
+            border-radius: 32px;
+            padding: 8px 22px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-create:hover {
+            background: #0e5f94;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 28px;
+        }
+
+        /* Cards & tables */
+        .grid-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            border: 1px solid #e6edf4;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eef2f8;
+            padding-bottom: 12px;
+        }
+
+        .filter-chip {
+            background: #f0f4fa;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .filter-chip.active-filter {
+            background: #2179b8;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 8px;
+            font-weight: 600;
+            color: #2a577b;
+            border-bottom: 1px solid #e2eaf2;
+        }
+
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #f0f4fa;
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            background: #e9f0f9;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .action-icon {
+            color: #7795b0;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: 0.1s;
+        }
+
+        .action-icon:hover {
+            color: #2179b8;
+        }
+
+        .empty-row {
+            text-align: center;
+            padding: 32px;
+            color: #7f9cbb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            width: 550px;
+            max-width: 92%;
+            padding: 26px;
+            box-shadow: 0 24px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 14px;
+            border: 1px solid #cbdde9;
+            border-radius: 14px;
+            font-family: inherit;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 1.6rem;
+            background: none;
+            border: none;
+            margin-right: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                transform: translateX(-100%);
+                height: 100%;
+                transition: transform 0.2s;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .hamburger {
+                display: block;
+            }
+            .top-bar {
+                padding: 12px 16px;
+            }
+            .content-area {
+                padding: 18px;
+            }
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 44px;
+            border: 1px solid #d4e2ef;
+            margin-bottom: 20px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .note-editor {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar" id="sidebar">
+        <div class="logo-area">
+            <h1><i class="fas fa-file-signature"></i> СЭД</h1>
+            <p>Система электронного документооборота</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item" data-view="dashboard"><i class="fas fa-tachometer-alt"></i> Главная</div>
+            <div class="nav-category">ВХОДЯЩИЕ ЗАДАНИЯ</div>
+            <div class="nav-item" data-view="incoming"><i class="fas fa-inbox"></i> Входящие</div>
+            <div class="submenu" id="incomingSub">
+                <div class="sub-item" data-inc-status="Входные">Входные</div><div class="sub-item" data-inc-status="В работе">В работе</div>
+                <div class="sub-item" data-inc-status="Закрытое">Закрытое</div><div class="sub-item" data-inc-status="На контроле">На контроле</div>
+                <div class="sub-item" data-inc-status="Ответственное исполнение">Ответственное исполнение</div><div class="sub-item" data-inc-status="На согласовании">На согласовании</div>
+                <div class="sub-item" data-inc-status="Делегировано мне">Делегировано мне</div><div class="sub-item" data-inc-status="Отложено">Отложено</div>
+            </div>
+            <div class="nav-category">ИСХОДЯЩИЕ ЗАДАНИЯ</div>
+            <div class="nav-item" data-view="outgoing"><i class="fas fa-paper-plane"></i> Исходящие</div>
+            <div class="submenu" id="outgoingSub">
+                <div class="sub-item" data-out-status="Исходящие">Исходящие</div><div class="sub-item" data-out-status="Делегировано">Делегировано</div>
+                <div class="sub-item" data-out-status="Завершено">Завершено</div><div class="sub-item" data-out-status="Просрочено">Просрочено</div>
+            </div>
+            <div class="nav-category">МОИ ДАННЫЕ</div>
+            <div class="nav-item" data-view="myTasks"><i class="fas fa-tasks"></i> МОЙ ЗАДАНИЯ</div>
+            <div class="nav-item" data-view="myDocs"><i class="fas fa-folder-open"></i> МОЙ ДОКУМЕНТЫ</div>
+            <div class="nav-item" data-view="notes"><i class="fas fa-sticky-note"></i> ЗАМЕТКАМИ</div>
+            <div class="nav-item" data-view="myTable"><i class="fas fa-table"></i> МОЙ ТАБЛИЦА</div>
+            <div class="nav-category">СПРАВОЧНИКИ</div>
+            <div class="nav-item" data-view="reference"><i class="fas fa-book"></i> СПРАВОЧНАЯ</div>
+            <div class="nav-item" data-view="instruction"><i class="fas fa-info-circle"></i> ИНСТРУКЦИЯ</div>
+            <div class="nav-item" data-view="registration"><i class="fas fa-registered"></i> РЕГИСТРАЦИОННЫЙ</div>
+            <div class="nav-category">ЖУРНАЛЫ</div>
+            <div class="nav-item" data-view="journals"><i class="fas fa-clipboard-list"></i> ЖУРНАЛЫ</div>
+            <div class="nav-category">ПРОЕКТЫ</div>
+            <div class="nav-item" data-view="newProject"><i class="fas fa-rocket"></i> НОВЫЙ ПРОЕКТ</div>
+            <div class="nav-category">ПОИСК</div>
+            <div class="nav-item" data-view="searchDoc"><i class="fas fa-search"></i> Поиск документов</div>
+            <div class="nav-item" data-view="searchTask"><i class="fas fa-search-plus"></i> Поиск заданий</div>
+            <div class="nav-item" data-view="deleteEvents"><i class="fas fa-trash-alt"></i> Удаление ПД</div>
+            <div class="nav-item" data-view="matSearch"><i class="fas fa-chart-line"></i> Мат. накопления/КЗН</div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="top-bar">
+            <div style="display: flex; align-items: center;">
+                <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+                <h1 class="page-title" id="pageTitle">Главная / Последние карточки</h1>
+            </div>
+            <button class="btn-create" id="globalCreateBtn"><i class="fas fa-plus"></i> Создать задание</button>
+        </div>
+        <div class="content-area" id="contentArea"></div>
+    </div>
+</div>
+
+<!-- Модалка общего создания/редактирования -->
+<div id="itemModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Создать / редактировать</h3>
+        <label>Тип</label>
+        <select id="modalType"><option value="incomingTask">Входящее задание</option><option value="outgoingTask">Исходящее задание</option><option value="document">Документ</option></select>
+        <label>Название / Тема</label><input id="modalName" placeholder="Наименование">
+        <label>Статус</label><input id="modalStatus" placeholder="Статус">
+        <label>Описание</label><textarea id="modalDesc" rows="2"></textarea>
+        <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
+            <button id="modalCancel" style="background:#e2edf5; border:none; padding:8px 18px; border-radius:40px;">Отмена</button>
+            <button id="modalSave" style="background:#2179b8; color:white; border:none; padding:8px 20px; border-radius:40px;">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- ИНИЦИАЛИЗАЦИЯ ДАННЫХ ----------
+    let tasksIncoming = [
+        { id: "INC001", title: "Проверка актов конфиденциальности", status: "В работе", dateChanged: "2026-01-13 12:54", owner: "Иванов И.И.", description: "Акт о нарушении" },
+        { id: "INC002", title: "Согласование доступа к КД", status: "На согласовании", dateChanged: "2026-01-14 09:20", owner: "Петрова А.С.", description: "Заявка на доступ" },
+        { id: "INC003", title: "Уничтожение материального носителя", status: "Закрытое", dateChanged: "2026-01-10 16:30", owner: "Сидоров В.Н.", description: "Акт об уничтожении" }
+    ];
+    let tasksOutgoing = [
+        { id: "OUT001", title: "Исходящий запрос по КЗН", status: "Исходящие", dateChanged: "2026-01-15 11:20", owner: "Козлова Е.М.", description: "реестр" },
+        { id: "OUT002", title: "Отчет по мат. накоплениям", status: "Завершено", dateChanged: "2026-01-12 08:45", owner: "Лебедев Д.С.", description: "отправлен" }
+    ];
+    let myDocuments = [
+        { id: "DOC01", name: "Акт о снятии грифа", docType: "Акт", state: "В создан", dateChanged: "2026-01-13 14:28", author: "Иванов" },
+        { id: "DOC02", name: "Договор КТ №45", docType: "Договор КТ", state: "В согласован (зависимом)", dateChanged: "2026-01-14 10:15", author: "Петрова" }
+    ];
+    let projects = []; // проекты (Новый проект)
+    let notes = [{ id: "n1", text: "Согласовать регламент до 20.01" }];
+    let myTableData = [
+        { column1: "Показатель", column2: "Значение", column3: "Статус" },
+        { column1: "КД-2026-01", column2: "150 единиц", column3: "Активно" }
+    ];
+    // Журналы (по требованию)
+    let journalsData = {
+        "Журнал инвентарного учета": [{ date: "10.01.2026", event: "Поступление носителя", user: "Иванов" }],
+        "Журнал передачи конфиденциальности": [{ date: "12.01.2026", event: "Передача дела №23", user: "Петрова" }],
+        "Журнал регистрации конфиденциальности": [{ date: "13.01.2026", event: "Рег. номер К-45", user: "Сидоров" }]
+    };
+    let deletionEvents = [{ id: "DEL1", date: "2026-01-09", info: "Удаление ПД по акту №12", user: "admin" }];
+
+    function saveToLocal() {
+        localStorage.setItem("tasksIncoming", JSON.stringify(tasksIncoming));
+        localStorage.setItem("tasksOutgoing", JSON.stringify(tasksOutgoing));
+        localStorage.setItem("myDocuments", JSON.stringify(myDocuments));
+        localStorage.setItem("projects", JSON.stringify(projects));
+        localStorage.setItem("notes", JSON.stringify(notes));
+        localStorage.setItem("myTableData", JSON.stringify(myTableData));
+        localStorage.setItem("deletionEvents", JSON.stringify(deletionEvents));
+    }
+    function loadFromLocal() {
+        let inc = localStorage.getItem("tasksIncoming"); if(inc) tasksIncoming = JSON.parse(inc);
+        let out = localStorage.getItem("tasksOutgoing"); if(out) tasksOutgoing = JSON.parse(out);
+        let docs = localStorage.getItem("myDocuments"); if(docs) myDocuments = JSON.parse(docs);
+        let pr = localStorage.getItem("projects"); if(pr) projects = JSON.parse(pr);
+        let nt = localStorage.getItem("notes"); if(nt) notes = JSON.parse(nt);
+        let mt = localStorage.getItem("myTableData"); if(mt) myTableData = JSON.parse(mt);
+        let del = localStorage.getItem("deletionEvents"); if(del) deletionEvents = JSON.parse(del);
+    }
+    loadFromLocal();
+
+    let currentView = "dashboard";
+
+    // Helper получить последние карточки
+    function getRecentCards() {
+        let all = [...tasksIncoming.map(t=>({id:t.id, name:t.title, date:t.dateChanged, type:"вх.задание"})),
+                   ...tasksOutgoing.map(t=>({id:t.id, name:t.title, date:t.dateChanged, type:"исх.задание"})),
+                   ...myDocuments.map(d=>({id:d.id, name:d.name, date:d.dateChanged, type:"документ"}))];
+        all.sort((a,b)=>new Date(b.date)-new Date(a.date));
+        return all.slice(0,6);
+    }
+
+    // RENDER FUNCTIONS
+    function renderDashboard() {
+        let cards = getRecentCards();
+        let html = `<div class="grid-card"><h3><i class="fas fa-history"></i> Последние карточки</h3>
+        <table><thead><tr><th>Номер</th><th>Наименование</th><th>Дата изменения</th></tr></thead><tbody>`;
+        cards.forEach(c=>{html+=`<tr><td>${c.id}</td><td>${c.name} (${c.type})</td><td>${c.date}</td></tr>`;});
+        html+=`</tbody></table><div style="margin-top:16px; text-align:right"><span class="filter-chip" id="moreCardsBtn">Ещё...</span></div></div>
+        <div class="grid-card"><div class="flex-between"><h3>Информация</h3></div><p>Система конфиденциального документооборота. Версия 2.0 | Активных заданий: ${tasksIncoming.length+tasksOutgoing.length}</p></div>`;
+        document.getElementById("contentArea").innerHTML = html;
+        document.getElementById("pageTitle").innerText = "Главная / Последние карточки";
+        document.getElementById("moreCardsBtn")?.addEventListener("click",()=>{alert("Все карточки: "+cards.map(c=>c.id+": "+c.name).join("\n"));});
+    }
+
+    function renderIncoming(filterStatus=null) {
+        let list = filterStatus ? tasksIncoming.filter(t=>t.status===filterStatus) : tasksIncoming;
+        let html = `<div class="grid-card"><h3>Входящие задания</h3><div class="filter-buttons" id="incFilterBlock"></div>
+        <table><thead><tr><th>ID</th><th>Название</th><th>Статус</th><th>Дата</th><th>Исполнитель</th><th>Действия</th></tr></thead><tbody>`;
+        list.forEach(t=>{html+=`<tr><td>${t.id}</td><td>${t.title}</td><td><span class="badge">${t.status}</span></td><td>${t.dateChanged}</td><td>${t.owner}</td>
+        <td><i class="fas fa-edit action-icon edit-inc" data-id="${t.id}"></i><i class="fas fa-trash-alt action-icon del-inc" data-id="${t.id}"></i></td></tr>`;});
+        if(list.length===0) html+=`<tr><td colspan="6" class="empty-row">Нет заданий</td></tr>`;
+        html+=`</tbody></table></div>`;
+        document.getElementById("contentArea").innerHTML = html;
+        document.getElementById("pageTitle").innerText = "Входящие задания"+(filterStatus?` / ${filterStatus}`:"");
+        let filters = ["Входные","В работе","Закрытое","На контроле","Ответственное исполнение","На согласовании","Делегировано мне","Отложено"];
+        let fdiv = document.getElementById("incFilterBlock");
+        filters.forEach(f=>{let chip=document.createElement("div");chip.classList.add("filter-chip");if(filterStatus===f)chip.classList.add("active-filter");chip.innerText=f;chip.onclick=()=>renderIncoming(f);fdiv.appendChild(chip);});
+        attachIncActions();
+    }
+    function renderOutgoing(filter=null){
+        let list = filter ? tasksOutgoing.filter(t=>t.status===filter) : tasksOutgoing;
+        let html = `<div class="grid-card"><h3>Исходящие задания</h3><div class="filter-buttons" id="outFilterBlock"></div><table><thead><tr><th>ID</th><th>Название</th><th>Статус</th><th>Дата</th><th>Автор</th><th>Действия</th></tr></thead><tbody>`;
+        list.forEach(t=>{html+=`<tr><td>${t.id}</td><td>${t.title}</td><td><span class="badge">${t.status}</span></td><td>${t.dateChanged}</td><td>${t.owner}</td><td><i class="fas fa-edit edit-out" data-id="${t.id}"></i><i class="fas fa-trash-alt del-out" data-id="${t.id}"></i></td></tr>`;});
+        if(list.length===0) html+=`<tr><td colspan="6" class="empty-row">Нет исходящих</td></tr>`;
+        html+=`</tbody></table></div>`;
+        document.getElementById("contentArea").innerHTML = html;
+        document.getElementById("pageTitle").innerText = "Исходящие";
+        let outStates=["Исходящие","Делегировано","Завершено","Просрочено"]; let fdiv2=document.getElementById("outFilterBlock");
+        outStates.forEach(s=>{let chip=document.createElement("div");chip.classList.add("filter-chip");if(filter===s)chip.classList.add("active-filter");chip.innerText=s;chip.onclick=()=>renderOutgoing(s);fdiv2.appendChild(chip);});
+        attachOutActions();
+    }
+    function renderMyTasks(){ // МОЙ ЗАДАНИЯ (текущий юзер)
+        let currentUser="Иванов И.И.";
+        let allTasks = [...tasksIncoming.filter(t=>t.owner===currentUser), ...tasksOutgoing.filter(t=>t.owner===currentUser)];
+        let html=`<div class="grid-card"><h3>Мои задания (${currentUser})</h3><table><thead><tr><th>ID</th><th>Название</th><th>Тип</th><th>Статус</th><th>Дата</th></tr></thead><tbody>`;
+        allTasks.forEach(t=>{html+=`<tr><td>${t.id}</td><td>${t.title}</td><td>${t.id.includes("INC")?"Входящее":"Исходящее"}</td><td>${t.status}</td><td>${t.dateChanged}</td></tr>`;});
+        if(allTasks.length===0) html+=`<tr><td colspan="5" class="empty-row">Заданий нет</td></tr>`;
+        html+=`</tbody></table></div>`;
+        document.getElementById("contentArea").innerHTML = html; document.getElementById("pageTitle").innerText = "МОЙ ЗАДАНИЯ";
+    }
+    function renderMyDocs(filterState=null){
+        let filtered=filterState? myDocuments.filter(d=>d.state===filterState):myDocuments;
+        let html=`<div class="grid-card"><h3>Мои документы</h3><div class="filter-buttons" id="docStatusFilter"></div><table><thead><tr><th>ID</th><th>Название</th><th>Тип</th><th>Статус</th><th>Дата</th><th>Действия</th></tr></thead><tbody>`;
+        filtered.forEach(d=>{html+=`<tr><td>${d.id}</td><td>${d.name}</td><td>${d.docType}</td><td><span class="badge">${d.state}</span></td><td>${d.dateChanged}</td><td><i class="fas fa-edit edit-doc" data-id="${d.id}"></i><i class="fas fa-trash-alt del-doc" data-id="${d.id}"></i></td></tr>`;});
+        if(filtered.length===0) html+=`<tr><td colspan="6" class="empty-row">Нет документов</td></tr>`;
+        html+=`</tbody></table></div>`;
+        document.getElementById("contentArea").innerHTML = html; document.getElementById("pageTitle").innerText = "Мои документы";
+        let statuses=["В создан","В согласован (зависимом)","В подписан","В готовом","В инциденте","Документы в состоянии проект"];
+        let fdiv=document.getElementById("docStatusFilter");
+        statuses.forEach(s=>{let chip=document.createElement("div");chip.classList.add("filter-chip");if(filterState===s)chip.classList.add("active-filter");chip.innerText=s;chip.onclick=()=>renderMyDocs(s);fdiv.appendChild(chip);});
+        attachDocActions();
+    }
+    function renderNotes(){ let html=`<div class="grid-card"><h3>Заметки</h3><div id="notesList"></div><textarea id="newNote" rows="2" placeholder="Новая заметка..." style="width:100%"></textarea><button id="addNoteBtn" class="filter-chip" style="margin-top:8px">+ Добавить</button></div>`;
+        document.getElementById("contentArea").innerHTML = html; document.getElementById("pageTitle").innerText = "ЗАМЕТКАМИ";
+        function refreshNotes(){ let container=document.getElementById("notesList"); if(container) container.innerHTML=notes.map((n,i)=>`<div style="padding:8px; border-bottom:1px solid #eef;"><i class="far fa-sticky-note"></i> ${n.text} <i class="fas fa-trash action-icon" style="float:right" data-idx="${i}"></i></div>`).join(""); document.querySelectorAll("[data-idx]").forEach(el=>{el.onclick=()=>{notes.splice(parseInt(el.dataset.idx),1); saveToLocal(); renderNotes();}});}
+        refreshNotes(); document.getElementById("addNoteBtn").onclick=()=>{let val=document.getElementById("newNote").value; if(val.trim()){notes.push({id:"n"+Date.now(),text:val}); saveToLocal(); renderNotes();}};
+    }
+    function renderMyTable(){ let html=`<div class="grid-card"><h3>МОЯ ТАБЛИЦА</h3><table><thead><tr><th>Параметр</th><th>Значение</th><th>Статус</th></tr></thead><tbody>${myTableData.map(r=>`<tr><td>${r.column1}</td><td>${r.column2}</td><td>${r.column3}</td></tr>`).join("")}</tbody></table></div>`; document.getElementById("contentArea").innerHTML = html; document.getElementById("pageTitle").innerText = "МОЙ ТАБЛИЦА";}
+    function renderReference(){ document.getElementById("contentArea").innerHTML=`<div class="grid-card"><h3>Справочная информация</h3><p>Стандарты конфиденциального делопроизводства. Версия инструкции 3.2. Контакт: support@sed.ru</p></div>`; document.getElementById("pageTitle").innerText="СПРАВОЧНАЯ";}
+    function renderInstruction(){ document.getElementById("contentArea").innerHTML=`<div class="grid-card"><h3>Инструкция пользователя</h3><p>1. Работа с входящими/исходящими<br>2. Создание документов и проектов<br>3. Журналы учета</p></div>`; document.getElementById("pageTitle").innerText="ИНСТРУКЦИЯ";}
+    function renderRegistration(){ document.getElementById("contentArea").innerHTML=`<div class="grid-card"><h3>Регистрационный учет</h3><table><tr><th>Рег.номер</th><th>Объект</th><th>Дата</th></tr><tr><td>КД-001</td><td>Система СЭД</td><td>01.01.2026</td></tr></table></div>`; document.getElementById("pageTitle").innerText="РЕГИСТРАЦИОННЫЙ";}
+    function renderJournals(){ let keys=Object.keys(journalsData); let html=`<div class="grid-card"><h3>Журналы</h3><select id="journalSelect">${keys.map(k=>`<option value="${k}">${k}</option>`).join("")}</select><div id="journalContent"></div></div>`; document.getElementById("contentArea").innerHTML = html; function showJournal(){let sel=document.getElementById("journalSelect").value; let data=journalsData[sel]||[]; let htmlTable=`<table><thead><tr><th>Дата</th><th>Событие</th><th>Пользователь</th></tr></thead><tbody>${data.map(r=>`<tr><td>${r.date}</td><td>${r.event}</td><td>${r.user}</td></tr>`).join("")}</tbody></table>`; document.getElementById("journalContent").innerHTML=htmlTable;} showJournal(); document.getElementById("journalSelect").addEventListener("change",showJournal); document.getElementById("pageTitle").innerText="ЖУРНАЛЫ";}
+    function renderNewProject(){ let html=`<div class="grid-card"><h3>НОВЫЙ ПРОЕКТ (конфиденциальный)</h3><input id="projTheme" placeholder="Тема"><input id="projRegNum" placeholder="Уч. номер: №"><textarea id="projInstr" placeholder="Инструкция / состав"></textarea><select id="projCountry"><option>Беларусь</option><option>Россия</option></select><label>Дата начала:</label><input type="date" id="projDateStart"><label>Дата окончания:</label><input type="date" id="projDateEnd"><div><label><input type="checkbox" id="projDeal"> Заявка на "Дело"</label></div><button id="saveProjectBtn" class="btn-create" style="margin-top:16px">Сохранить проект</button><div id="projectsList" style="margin-top:24px;"><h4>Сохраненные проекты</h4><ul id="projectItems"></ul></div></div>`;
+        document.getElementById("contentArea").innerHTML = html; document.getElementById("pageTitle").innerText="НОВЫЙ ПРОЕКТ";
+        function refreshProjects(){ let list=document.getElementById("projectItems"); if(list) list.innerHTML=projects.map(p=>`<li>${p.theme} | №${p.regNumber} | ${p.country} <i class="fas fa-trash-alt del-proj" data-id="${p.id}" style="margin-left:12px;color:red;cursor:pointer"></i></li>`).join(""); document.querySelectorAll(".del-proj").forEach(el=>{el.onclick=()=>{projects=projects.filter(p=>p.id!==el.dataset.id); saveToLocal(); renderNewProject();};});}
+        refreshProjects();
+        document.getElementById("saveProjectBtn").onclick=()=>{ let newProj={id:"PRJ"+Date.now(), theme:document.getElementById("projTheme").value, regNumber:document.getElementById("projRegNum").value||"б/н", instruction:document.getElementById("projInstr").value, country:document.getElementById("projCountry").value, startDate:document.getElementById("projDateStart").value, endDate:document.getElementById("projDateEnd").value, dealRequest:document.getElementById("projDeal").checked}; if(newProj.theme) projects.push(newProj); saveToLocal(); renderNewProject(); };
+    }
+    function renderSearchDoc(){ let html=`<div class="grid-card"><h3>Поиск документов</h3><input id="searchDocInput" class="search-input" placeholder="Название / тип"><div id="searchDocRes"></div></div>`; document.getElementById("contentArea").innerHTML = html; let input=document.getElementById("searchDocInput"); input.oninput=()=>{let v=input.value.toLowerCase(); let filtered=myDocuments.filter(d=>d.name.toLowerCase().includes(v)||d.docType.toLowerCase().includes(v)); let tab=`<table><tr><th>ID</th><th>Название</th><th>Тип</th><th>Статус</th></tr>${filtered.map(d=>`<tr><td>${d.id}</td><td>${d.name}</td><td>${d.docType}</td><td>${d.state}</td></tr>`).join("")}</table>`; document.getElementById("searchDocRes").innerHTML=tab||"Ничего";}; input.dispatchEvent(new Event("input")); document.getElementById("pageTitle").innerText="Поиск документов";}
+    function renderSearchTask(){ let html=`<div class="grid-card"><h3>Поиск заданий</h3><input id="searchTaskInput" class="search-input"><div id="searchTaskRes"></div></div>`; document.getElementById("contentArea").innerHTML = html; let inp=document.getElementById("searchTaskInput"); inp.oninput=()=>{let v=inp.value.toLowerCase(); let all=[...tasksIncoming,...tasksOutgoing]; let f=all.filter(t=>t.title.toLowerCase().includes(v)); let tab=`<table><tr><th>ID</th><th>Название</th><th>Статус</th></tr>${f.map(t=>`<tr><td>${t.id}</td><td>${t.title}</td><td>${t.status}</td></tr>`).join("")}</table>`; document.getElementById("searchTaskRes").innerHTML=tab;}; inp.dispatchEvent(new Event("input")); document.getElementById("pageTitle").innerText="Поиск заданий";}
+    function renderDeleteEvents(){ let html=`<div class="grid-card"><h3>Журнал удаления ПД</h3><table><tr><th>Дата</th><th>Событие</th><th>Пользователь</th></tr>${deletionEvents.map(e=>`<tr><td>${e.date}</td><td>${e.info}</td><td>${e.user}</td></tr>`).join("")}</table></div>`; document.getElementById("contentArea").innerHTML = html; document.getElementById("pageTitle").innerText="Удаление ПД";}
+    function renderMatSearch(){ document.getElementById("contentArea").innerHTML=`<div class="grid-card"><h3>Поиск мат. накоплений / КЗН</h3><p>Демо: активные накопления: КЗН-2026-001, Накопление №45</p></div>`; document.getElementById("pageTitle").innerText="Мат. накопления";}
+    function attachIncActions(){ document.querySelectorAll(".edit-inc").forEach(el=>{el.onclick=()=>{let id=el.dataset.id; let task=tasksIncoming.find(t=>t.id===id); if(task) openTaskModal(task,"incoming");};}); document.querySelectorAll(".del-inc").forEach(el=>{el.onclick=()=>{tasksIncoming=tasksIncoming.filter(t=>t.id!==el.dataset.id); saveToLocal(); renderIncoming();};});}
+    function attachOutActions(){ document.querySelectorAll(".edit-out").forEach(el=>{let id=el.dataset.id; let task=tasksOutgoing.find(t=>t.id===id); if(task) openTaskModal(task,"outgoing");}); document.querySelectorAll(".del-out").forEach(el=>{tasksOutgoing=tasksOutgoing.filter(t=>t.id!==el.dataset.id); saveToLocal(); renderOutgoing();});}
+    function attachDocActions(){ document.querySelectorAll(".edit-doc").forEach(el=>{let doc=myDocuments.find(d=>d.id===el.dataset.id); if(doc) openDocModal(doc);}); document.querySelectorAll(".del-doc").forEach(el=>{myDocuments=myDocuments.filter(d=>d.id!==el.dataset.id); saveToLocal(); renderMyDocs();});}
+    function openTaskModal(task,type){ document.getElementById("modalTitle").innerText="Редактировать задание"; document.getElementById("modalName").value=task.title; document.getElementById("modalStatus").value=task.status; document.getElementById("modalDesc").value=task.description; document.getElementById("itemModal").style.display="flex"; let saveBtn=document.getElementById("modalSave"); saveBtn.onclick=()=>{task.title=document.getElementById("modalName").value; task.status=document.getElementById("modalStatus").value; task.description=document.getElementById("modalDesc").value; task.dateChanged=new Date().toLocaleString(); saveToLocal(); document.getElementById("itemModal").style.display="none"; if(type==="incoming") renderIncoming(); else renderOutgoing();};}
+    function openDocModal(doc){ document.getElementById("modalTitle").innerText="Редактировать документ"; document.getElementById("modalName").value=doc.name; document.getElementById("modalStatus").value=doc.state; document.getElementById("modalDesc").value=doc.docType; document.getElementById("itemModal").style.display="flex"; let saveBtn=document.getElementById("modalSave"); saveBtn.onclick=()=>{doc.name=document.getElementById("modalName").value; doc.state=document.getElementById("modalStatus").value; doc.dateChanged=new Date().toLocaleString(); saveToLocal(); document.getElementById("itemModal").style.display="none"; renderMyDocs();};}
+    document.getElementById("modalCancel").onclick=()=>document.getElementById("itemModal").style.display="none";
+    document.getElementById("globalCreateBtn").onclick=()=>{ document.getElementById("modalTitle").innerText="Новое задание"; document.getElementById("modalName").value=""; document.getElementById("modalStatus").value="В работе"; document.getElementById("modalDesc").value=""; document.getElementById("itemModal").style.display="flex"; let saveBtn=document.getElementById("modalSave"); saveBtn.onclick=()=>{let type=document.getElementById("modalType").value; let name=document.getElementById("modalName").value; let stat=document.getElementById("modalStatus").value; let desc=document.getElementById("modalDesc").value; if(type==="incomingTask") tasksIncoming.push({id:"INC"+Date.now(), title:name, status:stat, dateChanged:new Date().toLocaleString(), owner:"Иванов И.И.", description:desc}); else if(type==="outgoingTask") tasksOutgoing.push({id:"OUT"+Date.now(), title:name, status:stat, dateChanged:new Date().toLocaleString(), owner:"Иванов И.И.", description:desc}); else myDocuments.push({id:"DOC"+Date.now(), name:name, docType:"Новый тип", state:stat, dateChanged:new Date().toLocaleString(), author:"Пользователь"}); saveToLocal(); document.getElementById("itemModal").style.display="none"; if(currentView==="incoming") renderIncoming(); else if(currentView==="outgoing") renderOutgoing(); else renderDashboard();};};
+    function setNavigation(){ document.querySelectorAll("[data-view]").forEach(el=>{el.onclick=()=>{let view=el.dataset.view; currentView=view; if(view==="dashboard") renderDashboard(); if(view==="incoming") renderIncoming(); if(view==="outgoing") renderOutgoing(); if(view==="myTasks") renderMyTasks(); if(view==="myDocs") renderMyDocs(); if(view==="notes") renderNotes(); if(view==="myTable") renderMyTable(); if(view==="reference") renderReference(); if(view==="instruction") renderInstruction(); if(view==="registration") renderRegistration(); if(view==="journals") renderJournals(); if(view==="newProject") renderNewProject(); if(view==="searchDoc") renderSearchDoc(); if(view==="searchTask") renderSearchTask(); if(view==="deleteEvents") renderDeleteEvents(); if(view==="matSearch") renderMatSearch(); document.getElementById("sidebar").classList.remove("open");};}); document.querySelectorAll(".sub-item").forEach(sub=>{if(sub.parentElement.id==="incomingSub"){sub.onclick=()=>{renderIncoming(sub.innerText); currentView="incoming";}} if(sub.parentElement.id==="outgoingSub"){sub.onclick=()=>{renderOutgoing(sub.innerText); currentView="outgoing";}} });}
+    setNavigation(); renderDashboard(); currentView="dashboard";
+    document.getElementById("hamburgerBtn").onclick=()=>document.getElementById("sidebar").classList.toggle("open");
+</script>
+</body>
+</html>
